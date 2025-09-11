@@ -84,56 +84,56 @@ class HomePage {
         return [
             {
                 id: 'album-1',
-                title: '十一月的萧邦',
+                title: '叶惠美',
                 artist: '周杰伦',
-                year: '2005',
-                cover: 'assets/images/album-covers/november-chopin.jpg',
-                genre: '流行',
-                songCount: 12
-            },
-            {
-                id: 'album-2',
-                title: '我很忙',
-                artist: '周杰伦',
-                year: '2007',
-                cover: 'assets/images/album-covers/im-busy.jpg',
-                genre: '流行',
-                songCount: 10
-            },
-            {
-                id: 'album-3',
-                title: '魔杰座',
-                artist: '周杰伦',
-                year: '2008',
-                cover: 'assets/images/album-covers/capricorn.jpg',
+                year: '2003',
+                cover: 'assets/images/artist-avatars/artist1.jpg',
                 genre: '流行',
                 songCount: 11
             },
             {
-                id: 'album-4',
-                title: '周杰伦的床边故事',
-                artist: '周杰伦',
-                year: '2016',
-                cover: 'assets/images/album-covers/bedtime-stories.jpg',
+                id: 'album-2',
+                title: '心中的日月',
+                artist: '王力宏',
+                year: '2004',
+                cover: 'assets/images/artist-avatars/artist2.jpg',
+                genre: '流行',
+                songCount: 12
+            },
+            {
+                id: 'album-3',
+                title: '新的心跳',
+                artist: '邓紫棋',
+                year: '2015',
+                cover: 'assets/images/artist-avatars/artist3.jpg',
                 genre: '流行',
                 songCount: 10
             },
             {
+                id: 'album-4',
+                title: '模特',
+                artist: '李荣浩',
+                year: '2013',
+                cover: 'assets/images/artist-avatars/artist4.jpg',
+                genre: '流行',
+                songCount: 9
+            },
+            {
                 id: 'album-5',
-                title: '叶惠美',
-                artist: '周杰伦',
-                year: '2003',
-                cover: 'assets/images/album-covers/ye-huimei.jpg',
+                title: '曹操',
+                artist: '林俊杰',
+                year: '2006',
+                cover: 'assets/images/artist-avatars/artist5.jpg',
                 genre: '流行',
                 songCount: 11
             },
             {
                 id: 'album-6',
-                title: '七里香',
-                artist: '周杰伦',
-                year: '2004',
-                cover: 'assets/images/album-covers/qi-li-xiang.jpg',
-                genre: '流行',
+                title: '橙月',
+                artist: '方大同',
+                year: '2008',
+                cover: 'assets/images/artist-avatars/artist6.jpg',
+                genre: 'R&B',
                 songCount: 10
             }
         ];
