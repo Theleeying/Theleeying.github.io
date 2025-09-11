@@ -284,6 +284,81 @@ class SongAPI {
         const promises = songs.map(song => this.getCompleteSongInfo(song));
         return Promise.all(promises);
     }
+    
+    // 获取推荐歌单
+    async getPlaylists(category = '流行', limit = 10) {
+        try {
+            console.log(`获取${category}歌单，数量: ${limit}`);
+            
+            // 根据分类搜索相关歌曲
+            const songs = await this.searchSongs(category, limit * 3); // 获取更多歌曲用于分组
+            
+            if (!songs || songs.length === 0) {
+                console.log(`未找到${category}相关歌曲`);
+                return [];
+            }
+            
+            // 将歌曲分组创建歌单
+            const playlists = [];
+            const songsPerPlaylist = Math.ceil(songs.length / limit);
+            
+            for (let i = 0; i < limit && i * songsPerPlaylist < songs.length; i++) {
+                const startIndex = i * songsPerPlaylist;
+                const endIndex = Math.min(startIndex + songsPerPlaylist, songs.length);
+                const playlistSongs = songs.slice(startIndex, endIndex);
+                
+                if (playlistSongs.length > 0) {
+                    const playlist = {
+                        id: `playlist-${category}-${i + 1}`,
+                        title: `${category}精选 ${i + 1}`,
+                        description: `精选${category}音乐，共${playlistSongs.length}首歌曲`,
+                        cover: playlistSongs[0].cover || 'assets/images/album-covers/default.jpg',
+                        songCount: playlistSongs.length,
+                        duration: this.calculateTotalDuration(playlistSongs),
+                        songs: playlistSongs,
+                        category: category
+                    };
+                    playlists.push(playlist);
+                }
+            }
+            
+            console.log(`成功创建${playlists.length}个${category}歌单`);
+            return playlists;
+        } catch (error) {
+            console.error('获取歌单失败:', error);
+            return [];
+        }
+    }
+    
+    // 计算歌单总时长
+    calculateTotalDuration(songs) {
+        // 假设每首歌平均3-4分钟
+        const totalMinutes = songs.length * 3.5;
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = Math.floor(totalMinutes % 60);
+        
+        if (hours > 0) {
+            return `${hours}小时${minutes}分钟`;
+        } else {
+            return `${minutes}分钟`;
+        }
+    }
+    
+    // 获取热门歌单分类
+    getPlaylistCategories() {
+        return [
+            { name: '流行', keyword: '流行' },
+            { name: '摇滚', keyword: '摇滚' },
+            { name: '民谣', keyword: '民谣' },
+            { name: '电子', keyword: '电子音乐' },
+            { name: 'R&B', keyword: 'R&B' },
+            { name: '说唱', keyword: '说唱' },
+            { name: '古风', keyword: '古风' },
+            { name: '轻音乐', keyword: '轻音乐' },
+            { name: '经典', keyword: '经典老歌' },
+            { name: '欧美', keyword: '欧美流行' }
+        ];
+    }
 }
 
 // 创建全局API实例

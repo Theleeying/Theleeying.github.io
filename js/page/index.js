@@ -4,19 +4,97 @@ class HomePage {
     constructor() {
         this.playlistGrid = document.querySelector('.playlist-grid');
         this.albumGrid = document.querySelector('.album-grid');
+        this.categoryButtons = document.querySelectorAll('.category-btn');
+        this.currentCategory = '流行';
         
         this.init();
     }
     
     init() {
+        this.setupCategoryButtons();
         this.loadFeaturedPlaylists();
         this.loadNewAlbums();
     }
     
+    // 设置分类按钮事件
+    setupCategoryButtons() {
+        this.categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.getAttribute('data-category');
+                this.switchCategory(category);
+            });
+        });
+    }
+    
+    // 切换歌单分类
+    async switchCategory(category) {
+        // 更新按钮状态
+        this.categoryButtons.forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`[data-category="${category}"]`).classList.add('active');
+        
+        this.currentCategory = category;
+        
+        // 显示加载状态
+        this.showLoadingState();
+        
+        try {
+            // 使用API获取歌单
+            const playlists = await window.songAPI.getPlaylists(category, 6);
+            this.renderPlaylists(playlists);
+        } catch (error) {
+            console.error('加载歌单失败:', error);
+            this.showErrorState();
+        }
+    }
+    
+    // 显示加载状态
+    showLoadingState() {
+        if (!this.playlistGrid) return;
+        
+        this.playlistGrid.innerHTML = '';
+        
+        for (let i = 0; i < 6; i++) {
+            const loadingCard = $.create('div', 'playlist-card loading');
+            loadingCard.innerHTML = `
+                <div class="playlist-cover loading-placeholder"></div>
+                <div class="playlist-info">
+                    <h4 class="loading-placeholder">加载中...</h4>
+                    <p class="loading-placeholder">正在获取${this.currentCategory}歌单</p>
+                    <div class="playlist-meta">
+                        <span class="loading-placeholder">-- 首歌曲</span>
+                        <span class="loading-placeholder">-- 分钟</span>
+                    </div>
+                </div>
+            `;
+            this.playlistGrid.appendChild(loadingCard);
+        }
+    }
+    
+    // 显示错误状态
+    showErrorState() {
+        if (!this.playlistGrid) return;
+        
+        this.playlistGrid.innerHTML = `
+            <div class="error-message">
+                <h4>加载失败</h4>
+                <p>无法获取${this.currentCategory}歌单，请稍后重试</p>
+                <button onclick="location.reload()">重新加载</button>
+            </div>
+        `;
+    }
+    
     // 加载推荐歌单
-    loadFeaturedPlaylists() {
-        const playlists = this.getFeaturedPlaylists();
-        this.renderPlaylists(playlists);
+    async loadFeaturedPlaylists() {
+        try {
+            // 使用API获取歌单
+            const playlists = await window.songAPI.getPlaylists(this.currentCategory, 6);
+            this.renderPlaylists(playlists);
+        } catch (error) {
+            console.error('加载歌单失败:', error);
+            // 降级到静态歌单
+            const playlists = this.getFeaturedPlaylists();
+            this.renderPlaylists(playlists);
+        }
     }
     
     // 加载新专速递
@@ -211,9 +289,132 @@ class HomePage {
     // 打开歌单
     openPlaylist(playlist) {
         console.log('打开歌单:', playlist.title);
-        // 这里可以跳转到歌单详情页或显示歌单内容
-        // 暂时显示提示
-        this.showToast(`正在加载歌单: ${playlist.title}`);
+        
+        if (playlist.songs && playlist.songs.length > 0) {
+            // 显示歌单中的歌曲
+            this.showPlaylistSongs(playlist);
+        } else {
+            this.showToast(`歌单 ${playlist.title} 暂无歌曲`);
+        }
+    }
+    
+    // 显示歌单中的歌曲
+    showPlaylistSongs(playlist) {
+        // 创建模态框
+        const modal = $.create('div', 'playlist-songs-modal');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        `;
+        
+        // 创建内容容器
+        const content = $.create('div', 'modal-content');
+        content.style.cssText = `
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            max-height: 80vh;
+            width: 90%;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        `;
+        
+        // 创建标题
+        const title = $.create('h2', 'modal-title');
+        title.textContent = playlist.title;
+        title.style.cssText = `
+            color: white;
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+            text-align: center;
+        `;
+        
+        // 创建歌单信息
+        const info = $.create('div', 'playlist-info');
+        info.innerHTML = `
+            <p style="color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 1.5rem;">
+                ${playlist.description} • ${playlist.duration}
+            </p>
+        `;
+        
+        // 创建歌曲列表
+        const songList = $.create('div', 'song-list');
+        songList.style.cssText = `
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        `;
+        
+        playlist.songs.forEach((song, index) => {
+            const songItem = this.createSongItem(song, index);
+            songList.appendChild(songItem);
+        });
+        
+        // 创建关闭按钮
+        const closeBtn = $.create('button', 'close-btn');
+        closeBtn.innerHTML = '✕';
+        closeBtn.style.cssText = `
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        
+        // 组装模态框
+        content.appendChild(closeBtn);
+        content.appendChild(title);
+        content.appendChild(info);
+        content.appendChild(songList);
+        modal.appendChild(content);
+        
+        // 添加到页面
+        document.body.appendChild(modal);
+        
+        // 添加关闭事件
+        const closeModal = () => {
+            modal.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.parentNode.removeChild(modal);
+                }
+            }, 300);
+        };
+        
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // ESC键关闭
+        const handleKeydown = (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.removeEventListener('keydown', handleKeydown);
+            }
+        };
+        document.addEventListener('keydown', handleKeydown);
     }
     
     // 打开专辑 - 搜索该歌手的歌曲
