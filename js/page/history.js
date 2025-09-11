@@ -81,10 +81,8 @@ class HistoryManager {
             
             if (historyData) {
                 this.historyData = JSON.parse(historyData);
-                console.log('加载历史数据:', this.historyData.length, '条记录');
             } else {
                 this.historyData = [];
-                console.log('没有历史数据');
             }
 
             this.applyFilters();
@@ -216,11 +214,29 @@ class HistoryManager {
 
     // 播放歌曲
     playSong(songId) {
-        const song = this.historyData.find(item => item.id === songId);
-        if (song && window.musicPlayer) {
-            window.musicPlayer.playSong(song);
-            this.showToast('开始播放', 'success');
+        // 尝试多种ID匹配方式
+        let song = this.historyData.find(item => item.id === songId);
+        if (!song) {
+            // 尝试字符串匹配
+            song = this.historyData.find(item => String(item.id) === String(songId));
         }
+        if (!song) {
+            // 尝试数字匹配
+            song = this.historyData.find(item => Number(item.id) === Number(songId));
+        }
+        
+        if (!song) {
+            this.showToast('未找到歌曲', 'error');
+            return;
+        }
+        
+        if (!window.musicPlayer) {
+            this.showToast('播放器不可用', 'error');
+            return;
+        }
+        
+        window.musicPlayer.playSong(song);
+        this.showToast('开始播放', 'success');
     }
 
     // 从历史记录中删除
@@ -364,6 +380,7 @@ class HistoryManager {
                 artist: song.artist,
                 album: song.album || '',
                 cover: song.cover,
+                url: song.url, // 保存播放URL
                 duration: song.duration || 0,
                 playTime: new Date().toISOString(),
                 playCount: 1
@@ -375,6 +392,7 @@ class HistoryManager {
                 existing.playTime = playRecord.playTime;
                 existing.playCount = (existing.playCount || 1) + 1;
                 existing.duration = song.duration || existing.duration;
+                existing.url = song.url || existing.url; // 更新URL
             } else {
                 // 添加新记录
                 historyData.unshift(playRecord);
@@ -386,7 +404,6 @@ class HistoryManager {
             }
 
             localStorage.setItem(historyKey, JSON.stringify(historyData));
-            console.log('添加播放记录:', playRecord.title);
         } catch (error) {
             console.error('添加播放记录失败:', error);
         }
@@ -407,15 +424,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('历史记录管理器已初始化');
         
         // 确保播放器已初始化
-        if (window.musicPlayer) {
-            console.log('全局播放器已可用');
-        } else {
-            console.log('等待全局播放器初始化...');
+        if (!window.musicPlayer) {
             // 如果播放器还没初始化，等待一下
             setTimeout(() => {
-                if (window.musicPlayer) {
-                    console.log('全局播放器已可用（延迟）');
-                } else {
+                if (!window.musicPlayer) {
                     console.warn('全局播放器仍未初始化');
                 }
             }, 1000);
