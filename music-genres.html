@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐风格 - EchoVerse</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/page/genres.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>🎵 EchoVerse</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="explore.html">发现</a></li>
+                <li><a href="about.html">关于</a></li>
+                <li><a href="login.html" class="login-link">登录</a></li>
+                <li><a href="history.html" id="historyLink" style="display: none;">历史</a></li>
+                <li class="auth-section" style="display: none;">
+                    <div class="user-menu">
+                        <span class="user-info"></span>
+                        <button class="logout-btn">退出</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 页面头部 -->
+        <section class="genres-hero">
+            <div class="hero-content">
+                <h1>音乐风格</h1>
+                <p>探索不同的音乐世界，发现属于你的音乐风格</p>
+            </div>
+        </section>
+
+        <!-- 音乐风格网格 -->
+        <section class="genres-grid">
+            <div class="container">
+                <div class="genre-card">
+                    <div class="genre-icon">🎵</div>
+                    <h3>流行音乐</h3>
+                    <p>Pop Music</p>
+                    <div class="genre-description">
+                        <p>流行音乐是最受欢迎的音乐类型之一，旋律优美，节奏明快，容易传唱。代表歌手包括周杰伦、王力宏、邓紫棋等。</p>
+                    </div>
+                    <div class="genre-features">
+                        <span class="feature-tag">旋律优美</span>
+                        <span class="feature-tag">节奏明快</span>
+                        <span class="feature-tag">易于传唱</span>
+                    </div>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-icon">🎸</div>
+                    <h3>摇滚音乐</h3>
+                    <p>Rock Music</p>
+                    <div class="genre-description">
+                        <p>摇滚音乐以其强烈的节奏感和电吉他的独特音色而闻名，表达着年轻人的反叛精神和自由意志。</p>
+                    </div>
+                    <div class="genre-features">
+                        <span class="feature-tag">强烈节奏</span>
+                        <span class="feature-tag">电吉他</span>
+                        <span class="feature-tag">反叛精神</span>
+                    </div>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-icon">🎻</div>
+                    <h3>民谣音乐</h3>
+                    <p>Folk Music</p>
+                    <div class="genre-description">
+                        <p>民谣音乐以简单的乐器伴奏和真挚的歌词著称，讲述着生活中的故事和情感，温暖人心。</p>
+                    </div>
+                    <div class="genre-features">
+                        <span class="feature-tag">简单乐器</span>
+                        <span class="feature-tag">真挚歌词</span>
+                        <span class="feature-tag">温暖人心</span>
+                    </div>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-icon">🎹</div>
+                    <h3>电子音乐</h3>
+                    <p>Electronic Music</p>
+                    <div class="genre-description">
+                        <p>电子音乐运用电子乐器和数字技术制作，创造出独特的音效和节奏，是现代音乐的重要组成部分。</p>
+                    </div>
+                    <div class="genre-features">
+                        <span class="feature-tag">电子乐器</span>
+                        <span class="feature-tag">数字技术</span>
+                        <span class="feature-tag">独特音效</span>
+                    </div>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-icon">🎺</div>
+                    <h3>R&B音乐</h3>
+                    <p>Rhythm and Blues</p>
+                    <div class="genre-description">
+                        <p>R&B音乐融合了节奏蓝调和灵魂乐元素，以其独特的节拍和情感表达而受到广泛喜爱。</p>
+                    </div>
+                    <div class="genre-features">
+                        <span class="feature-tag">节奏蓝调</span>
+                        <span class="feature-tag">灵魂乐</span>
+                        <span class="feature-tag">情感表达</span>
+                    </div>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-icon">🎤</div>
+                    <h3>说唱音乐</h3>
+                    <p>Hip Hop</p>
+                    <div class="genre-description">
+                        <p>说唱音乐以其独特的韵律和节奏感著称，通过说唱的方式表达思想和情感，是年轻人的重要文化表达。</p>
+                    </div>
+                    <div class="genre-features">
+                        <span class="feature-tag">独特韵律</span>
+                        <span class="feature-tag">节奏感</span>
+                        <span class="feature-tag">文化表达</span>
+                    </div>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-icon">🌸</div>
+                    <h3>古风音乐</h3>
+                    <p>Ancient Style</p>
+                    <div class="genre-description">
+                        <p>古风音乐融合了中国传统音乐元素和现代流行音乐，以其优美的旋律和诗意的歌词而受到喜爱。</p>
+                    </div>
+                    <div class="genre-features">
+                        <span class="feature-tag">传统元素</span>
+                        <span class="feature-tag">优美旋律</span>
+                        <span class="feature-tag">诗意歌词</span>
+                    </div>
+                </div>
+
+                <div class="genre-card">
+                    <div class="genre-icon">🎼</div>
+                    <h3>轻音乐</h3>
+                    <p>Light Music</p>
+                    <div class="genre-description">
+                        <p>轻音乐以其舒缓的节奏和优美的旋律著称，适合放松心情，是工作和学习时的理想背景音乐。</p>
+                    </div>
+                    <div class="genre-features">
+                        <span class="feature-tag">舒缓节奏</span>
+                        <span class="feature-tag">优美旋律</span>
+                        <span class="feature-tag">放松心情</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 EchoVerse. 你的个人音乐宇宙</p>
+        <p class="disclaimer">本站资源来自网络，仅限本人学习参考，严禁下载、传播或商用，如侵权请与我联系删除。继续使用将视为同意本声明</p>
+        <p class="api-credit">API来源：GD音乐台(music.gdstudio.xyz)</p>
+    </footer>
+
+    <!-- 全局音乐播放器 -->
+    <div class="player-bar">
+        <div class="player-info">
+            <img src="assets/images/album-covers/default.jpg" alt="专辑封面" class="album-cover">
+            <div class="song-info">
+                <h4 class="song-title">选择一首歌曲开始播放</h4>
+                <p class="artist-name">艺术家</p>
+            </div>
+        </div>
+        <div class="player-controls">
+            <button class="control-btn prev-btn">⏮️</button>
+            <button class="control-btn play-btn">▶️</button>
+            <button class="control-btn next-btn">⏭️</button>
+        </div>
+        <div class="player-progress">
+            <span class="current-time">0:00</span>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <span class="total-time">0:00</span>
+        </div>
+        <div class="player-volume">
+            <button class="volume-btn">🔊</button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio-player" preload="metadata"></audio>
+
+    <script src="js/common.js"></script>
+    <script src="js/song-api.js"></script>
+    <script src="js/page/player.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/auth-manager.js"></script>
+    <script src="js/page/history.js"></script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>周杰伦 - EchoVerse</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/page/artist.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>🎵 EchoVerse</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="explore.html">发现</a></li>
+                <li><a href="about.html">关于</a></li>
+                <li><a href="login.html" class="login-link">登录</a></li>
+                <li><a href="history.html" id="historyLink" style="display: none;">历史</a></li>
+                <li class="auth-section" style="display: none;">
+                    <div class="user-menu">
+                        <span class="user-info"></span>
+                        <button class="logout-btn">退出</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <!-- 歌手简介头部 -->
+        <section class="artist-hero">
+            <div class="artist-cover">
+                <img src="assets/images/artist-avatars/artist1.jpg" alt="周杰伦" class="artist-image">
+                <div class="artist-overlay">
+                    <h1>周杰伦</h1>
+                    <p class="artist-subtitle">华语流行天王</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 歌手信息 -->
+        <section class="artist-info">
+            <div class="container">
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>基本信息</h3>
+                        <ul>
+                            <li><strong>本名：</strong>周杰伦</li>
+                            <li><strong>英文名：</strong>Jay Chou</li>
+                            <li><strong>出生日期：</strong>1979年1月18日</li>
+                            <li><strong>出生地：</strong>台湾新北市</li>
+                            <li><strong>职业：</strong>歌手、词曲创作人、音乐制作人、演员、导演</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>音乐成就</h3>
+                        <ul>
+                            <li><strong>专辑数量：</strong>15张录音室专辑</li>
+                            <li><strong>代表作品：</strong>《青花瓷》、《稻香》、《夜曲》</li>
+                            <li><strong>获奖记录：</strong>金曲奖最佳专辑制作人</li>
+                            <li><strong>音乐风格：</strong>R&B、流行、中国风</li>
+                            <li><strong>影响力：</strong>华语乐坛最具影响力的音乐人之一</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 代表作品 -->
+        <section class="featured-works">
+            <div class="container">
+                <h2>代表作品</h2>
+                <div class="works-grid">
+                    <div class="work-item">
+                        <img src="assets/images/album-covers/default.jpg" alt="青花瓷">
+                        <h4>青花瓷</h4>
+                        <p>2007年</p>
+                    </div>
+                    <div class="work-item">
+                        <img src="assets/images/album-covers/default.jpg" alt="稻香">
+                        <h4>稻香</h4>
+                        <p>2008年</p>
+                    </div>
+                    <div class="work-item">
+                        <img src="assets/images/album-covers/default.jpg" alt="夜曲">
+                        <h4>夜曲</h4>
+                        <p>2005年</p>
+                    </div>
+                    <div class="work-item">
+                        <img src="assets/images/album-covers/default.jpg" alt="七里香">
+                        <h4>七里香</h4>
+                        <p>2004年</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 音乐风格 -->
+        <section class="music-style">
+            <div class="container">
+                <h2>音乐风格</h2>
+                <div class="style-tags">
+                    <span class="style-tag">R&B</span>
+                    <span class="style-tag">流行</span>
+                    <span class="style-tag">中国风</span>
+                    <span class="style-tag">嘻哈</span>
+                    <span class="style-tag">电子</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 EchoVerse. 你的个人音乐宇宙</p>
+        <p class="disclaimer">本站资源来自网络，仅限本人学习参考，严禁下载、传播或商用，如侵权请与我联系删除。继续使用将视为同意本声明</p>
+        <p class="api-credit">API来源：GD音乐台(music.gdstudio.xyz)</p>
+    </footer>
+
+    <!-- 全局音乐播放器 -->
+    <div class="player-bar">
+        <div class="player-info">
+            <img src="assets/images/album-covers/default.jpg" alt="专辑封面" class="album-cover">
+            <div class="song-info">
+                <h4 class="song-title">选择一首歌曲开始播放</h4>
+                <p class="artist-name">艺术家</p>
+            </div>
+        </div>
+        <div class="player-controls">
+            <button class="control-btn prev-btn">⏮️</button>
+            <button class="control-btn play-btn">▶️</button>
+            <button class="control-btn next-btn">⏭️</button>
+        </div>
+        <div class="player-progress">
+            <span class="current-time">0:00</span>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <span class="total-time">0:00</span>
+        </div>
+        <div class="player-volume">
+            <button class="volume-btn">🔊</button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio-player" preload="metadata"></audio>
+
+    <script src="js/common.js"></script>
+    <script src="js/song-api.js"></script>
+    <script src="js/page/player.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/auth-manager.js"></script>
+    <script src="js/page/history.js"></script>
+</body>
+</html>
