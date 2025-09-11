@@ -49,8 +49,13 @@ class ExplorePage {
         try {
             // 调用真实的音乐API
             const results = await window.songAPI.searchSongs(query, 20, 1);
-            this.currentResults = results;
-            this.renderSongList(results);
+            
+            if (results && results.length > 0) {
+                this.currentResults = results;
+                this.renderSongList(results);
+            } else {
+                this.showEmptyState();
+            }
         } catch (error) {
             console.error('搜索失败:', error);
             this.showError('搜索失败，请稍后重试');

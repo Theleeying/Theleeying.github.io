@@ -5,6 +5,7 @@ class SongAPI {
         this.baseURL = 'https://music-api.gdstudio.xyz/api.php';
         this.defaultSource = 'netease';
         this.defaultQuality = '320';
+        this.isAvailable = true;
     }
 
     // 搜索歌曲
@@ -18,38 +19,68 @@ class SongAPI {
                 pages: page.toString()
             });
 
-            const response = await fetch(`${this.baseURL}?${params}`);
+            console.log('搜索请求:', `${this.baseURL}?${params}`);
+            
+            const response = await fetch(`${this.baseURL}?${params}`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
+            console.log('API响应:', data);
             
+            // 处理不同的响应格式
             if (data.code === 200 && data.data) {
                 return this.formatSearchResults(data.data);
+            } else if (data.code === 200 && Array.isArray(data)) {
+                // 有些API可能直接返回数组
+                return this.formatSearchResults(data);
+            } else if (Array.isArray(data)) {
+                // 直接返回数组的情况
+                return this.formatSearchResults(data);
             } else {
-                throw new Error(data.message || '搜索失败');
+                throw new Error(data.message || data.msg || '搜索失败');
             }
         } catch (error) {
             console.error('搜索歌曲失败:', error);
-            throw error;
+            this.isAvailable = false;
+            // 返回空数组而不是抛出错误，避免页面崩溃
+            return [];
         }
     }
 
     // 格式化搜索结果
     formatSearchResults(songs) {
-        return songs.map(song => ({
-            id: song.id,
-            title: song.name,
-            artist: Array.isArray(song.artist) ? song.artist.join(', ') : song.artist,
-            album: song.album,
-            cover: song.pic_id,
-            lyricId: song.lyric_id,
-            source: song.source,
-            // 临时URL，实际播放时需要获取真实URL
-            url: null
-        }));
+        if (!Array.isArray(songs)) {
+            console.error('搜索结果不是数组:', songs);
+            return [];
+        }
+        
+        return songs.map(song => {
+            try {
+                return {
+                    id: song.id || song.track_id || Math.random().toString(36),
+                    title: song.name || song.title || '未知歌曲',
+                    artist: Array.isArray(song.artist) ? song.artist.join(', ') : (song.artist || '未知艺术家'),
+                    album: song.album || '未知专辑',
+                    cover: song.pic_id || song.picId || null,
+                    lyricId: song.lyric_id || song.lyricId || song.id,
+                    source: song.source || 'netease',
+                    // 临时URL，实际播放时需要获取真实URL
+                    url: null
+                };
+            } catch (error) {
+                console.error('格式化歌曲信息失败:', song, error);
+                return null;
+            }
+        }).filter(song => song !== null);
     }
 
     // 获取歌曲播放链接
@@ -179,3 +210,24 @@ class SongAPI {
 
 // 创建全局API实例
 window.songAPI = new SongAPI();
+
+// 测试API连接
+window.songAPI.testConnection = async function() {
+    try {
+        console.log('测试API连接...');
+        const results = await this.searchSongs('测试', 1, 1);
+        console.log('API连接测试成功:', results);
+        return true;
+    } catch (error) {
+        console.error('API连接测试失败:', error);
+        return false;
+    }
+};
+
+// 页面加载时测试API连接
+document.addEventListener('DOMContentLoaded', async () => {
+    const isConnected = await window.songAPI.testConnection();
+    if (!isConnected) {
+        console.warn('API连接失败，将使用模拟数据');
+    }
+});
