@@ -20,6 +20,7 @@ class SongAPI {
             });
 
             console.log('搜索请求:', `${this.baseURL}?${params}`);
+            console.log('搜索关键词:', keyword);
             
             const response = await fetch(`${this.baseURL}?${params}`, {
                 method: 'GET',
@@ -29,23 +30,32 @@ class SongAPI {
                 }
             });
             
+            console.log('响应状态:', response.status);
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log('API响应:', data);
+            console.log('API响应数据:', data);
             
             // 处理不同的响应格式
             if (data.code === 200 && data.data) {
-                return this.formatSearchResults(data.data);
+                const results = this.formatSearchResults(data.data);
+                console.log(`搜索 "${keyword}" 返回 ${results.length} 首歌曲`);
+                return results;
             } else if (data.code === 200 && Array.isArray(data)) {
                 // 有些API可能直接返回数组
-                return this.formatSearchResults(data);
+                const results = this.formatSearchResults(data);
+                console.log(`搜索 "${keyword}" 返回 ${results.length} 首歌曲`);
+                return results;
             } else if (Array.isArray(data)) {
                 // 直接返回数组的情况
-                return this.formatSearchResults(data);
+                const results = this.formatSearchResults(data);
+                console.log(`搜索 "${keyword}" 返回 ${results.length} 首歌曲`);
+                return results;
             } else {
+                console.warn('搜索响应格式异常:', data);
                 throw new Error(data.message || data.msg || '搜索失败');
             }
         } catch (error) {

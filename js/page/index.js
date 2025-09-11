@@ -216,12 +216,304 @@ class HomePage {
         this.showToast(`正在加载歌单: ${playlist.title}`);
     }
     
-    // 打开专辑
-    openAlbum(album) {
-        console.log('打开专辑:', album.title);
-        // 这里可以跳转到专辑详情页或显示专辑内容
-        // 暂时显示提示
-        this.showToast(`正在加载专辑: ${album.title}`);
+    // 打开专辑 - 搜索该歌手的歌曲
+    async openAlbum(album) {
+        console.log('打开专辑:', album.title, '歌手:', album.artist);
+        this.showToast(`正在搜索 ${album.artist} 的歌曲...`);
+        
+        try {
+            // 尝试多种搜索策略
+            const songs = await this.searchArtistSongs(album.artist);
+            
+            if (songs && songs.length > 0) {
+                console.log(`找到 ${songs.length} 首 ${album.artist} 的歌曲:`, songs);
+                
+                // 显示搜索结果
+                this.showArtistSongs(album.artist, songs);
+                
+                // 显示成功提示
+                this.showToast(`找到 ${songs.length} 首 ${album.artist} 的歌曲`);
+            } else {
+                console.log(`未找到 ${album.artist} 的歌曲`);
+                this.showToast(`未找到 ${album.artist} 的歌曲，请稍后重试`);
+            }
+        } catch (error) {
+            console.error('搜索歌手歌曲失败:', error);
+            this.showToast(`搜索失败: ${error.message}`);
+        }
+    }
+    
+    // 搜索歌手歌曲的多种策略
+    async searchArtistSongs(artist) {
+        // 定义搜索关键词列表
+        const searchTerms = [
+            artist, // 原始名字
+            artist + ' 歌曲', // 添加"歌曲"关键词
+            artist + ' 热门', // 添加"热门"关键词
+        ];
+        
+        // 如果是特定歌手，添加更多搜索变体
+        const artistVariants = {
+            '邓紫棋': ['G.E.M.', 'GEM', '邓紫棋 G.E.M.', '邓紫棋 泡沫', '邓紫棋 光年之外'],
+            '周杰伦': ['Jay Chou', '周杰伦 青花瓷', '周杰伦 稻香', '周杰伦 告白气球'],
+            '王力宏': ['Leehom Wang', '王力宏 龙的传人', '王力宏 大城小爱'],
+            '林俊杰': ['JJ Lin', '林俊杰 江南', '林俊杰 一千年以后'],
+            '李荣浩': ['李荣浩 模特', '李荣浩 李白', '李荣浩 年少有为'],
+            '方大同': ['Khalil Fong', '方大同 爱爱爱', '方大同 三人游']
+        };
+        
+        if (artistVariants[artist]) {
+            searchTerms.push(...artistVariants[artist]);
+        }
+        
+        console.log(`尝试搜索关键词:`, searchTerms);
+        
+        // 依次尝试每个搜索关键词
+        for (const term of searchTerms) {
+            try {
+                console.log(`尝试搜索: "${term}"`);
+                const songs = await window.songAPI.searchSongs(term, 20);
+                
+                if (songs && songs.length > 0) {
+                    console.log(`搜索 "${term}" 成功，找到 ${songs.length} 首歌曲`);
+                    return songs;
+                }
+            } catch (error) {
+                console.log(`搜索 "${term}" 失败:`, error.message);
+                continue;
+            }
+        }
+        
+        // 如果所有搜索都失败，返回空数组
+        console.log(`所有搜索关键词都未找到结果`);
+        return [];
+    }
+    
+    // 显示歌手的歌曲列表
+    showArtistSongs(artist, songs) {
+        // 创建模态框
+        const modal = $.create('div', 'artist-songs-modal');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        `;
+        
+        // 创建内容容器
+        const content = $.create('div', 'modal-content');
+        content.style.cssText = `
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            max-height: 80vh;
+            width: 90%;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        `;
+        
+        // 创建标题
+        const title = $.create('h2', 'modal-title');
+        title.textContent = `${artist} 的歌曲`;
+        title.style.cssText = `
+            color: white;
+            margin: 0 0 1.5rem 0;
+            font-size: 1.5rem;
+            text-align: center;
+        `;
+        
+        // 创建歌曲列表
+        const songList = $.create('div', 'song-list');
+        songList.style.cssText = `
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        `;
+        
+        songs.forEach((song, index) => {
+            const songItem = this.createSongItem(song, index);
+            songList.appendChild(songItem);
+        });
+        
+        // 创建关闭按钮
+        const closeBtn = $.create('button', 'close-btn');
+        closeBtn.innerHTML = '✕';
+        closeBtn.style.cssText = `
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        
+        // 组装模态框
+        content.appendChild(closeBtn);
+        content.appendChild(title);
+        content.appendChild(songList);
+        modal.appendChild(content);
+        
+        // 添加到页面
+        document.body.appendChild(modal);
+        
+        // 添加关闭事件
+        const closeModal = () => {
+            modal.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.parentNode.removeChild(modal);
+                }
+            }, 300);
+        };
+        
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // ESC键关闭
+        const handleKeydown = (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.removeEventListener('keydown', handleKeydown);
+            }
+        };
+        document.addEventListener('keydown', handleKeydown);
+    }
+    
+    // 创建歌曲列表项
+    createSongItem(song, index) {
+        const item = $.create('div', 'song-item');
+        item.style.cssText = `
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        `;
+        
+        // 添加悬停效果
+        item.addEventListener('mouseenter', () => {
+            item.style.background = 'rgba(255,255,255,0.2)';
+            item.style.transform = 'translateY(-2px)';
+        });
+        
+        item.addEventListener('mouseleave', () => {
+            item.style.background = 'rgba(255,255,255,0.1)';
+            item.style.transform = 'translateY(0)';
+        });
+        
+        // 专辑封面
+        const cover = $.create('img', 'song-cover');
+        cover.src = song.cover || 'assets/images/album-covers/default.jpg';
+        cover.style.cssText = `
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
+        `;
+        cover.onerror = () => {
+            cover.src = 'assets/images/album-covers/default.jpg';
+        };
+        
+        // 歌曲信息
+        const info = $.create('div', 'song-info');
+        info.style.cssText = `
+            flex: 1;
+            color: white;
+        `;
+        
+        const title = $.create('div', 'song-title');
+        title.textContent = song.title;
+        title.style.cssText = `
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        `;
+        
+        const artist = $.create('div', 'song-artist');
+        artist.textContent = song.artist;
+        artist.style.cssText = `
+            font-size: 0.9rem;
+            opacity: 0.8;
+        `;
+        
+        info.appendChild(title);
+        info.appendChild(artist);
+        
+        // 播放按钮
+        const playBtn = $.create('button', 'play-btn');
+        playBtn.innerHTML = '▶';
+        playBtn.style.cssText = `
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        `;
+        
+        // 添加播放按钮悬停效果
+        playBtn.addEventListener('mouseenter', () => {
+            playBtn.style.background = 'rgba(255,255,255,0.3)';
+            playBtn.style.transform = 'scale(1.1)';
+        });
+        
+        playBtn.addEventListener('mouseleave', () => {
+            playBtn.style.background = 'rgba(255,255,255,0.2)';
+            playBtn.style.transform = 'scale(1)';
+        });
+        
+        // 组装歌曲项
+        item.appendChild(cover);
+        item.appendChild(info);
+        item.appendChild(playBtn);
+        
+        // 添加点击播放事件
+        const playSong = async () => {
+            try {
+                this.showToast(`正在播放: ${song.title}`);
+                await window.musicPlayer.playSong(song);
+            } catch (error) {
+                console.error('播放失败:', error);
+                this.showToast(`播放失败: ${error.message}`);
+            }
+        };
+        
+        item.addEventListener('click', playSong);
+        playBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playSong();
+        });
+        
+        return item;
     }
     
     // 显示提示信息
@@ -258,6 +550,9 @@ class HomePage {
 
 // 页面加载完成后初始化首页
 document.addEventListener('DOMContentLoaded', () => {
-    new HomePage();
-    console.log('首页已初始化');
+    // 延迟初始化，确保API和播放器都已准备好
+    setTimeout(() => {
+        new HomePage();
+        console.log('首页已初始化');
+    }, 300);
 });
