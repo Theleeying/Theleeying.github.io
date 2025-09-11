@@ -204,29 +204,61 @@ class SongAPI {
     }
 
     // 获取歌词
-    async getLyrics(lyricId) {
+    async getLyrics(songId) {
         try {
+            console.log('获取歌词请求:', songId);
+            
+            // 尝试不同的API参数组合
             const params = new URLSearchParams({
                 types: 'lyric',
                 source: this.defaultSource,
-                id: lyricId
+                id: songId
             });
 
-            const response = await fetch(`${this.baseURL}?${params}`);
+            const url = `${this.baseURL}?${params}`;
+            console.log('歌词API请求URL:', url);
+
+            const response = await fetch(url, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                }
+            });
+            
+            console.log('歌词API响应状态:', response.status);
             
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                console.log('HTTP错误，状态码:', response.status);
+                return null;
             }
 
             const data = await response.json();
+            console.log('歌词API响应数据:', data);
             
+            // 检查不同的响应格式
             if (data.code === 200 && data.data) {
+                if (data.data.lyric && data.data.lyric.trim()) {
+                    console.log('找到歌词数据');
+                    return {
+                        original: data.data.lyric,
+                        translation: data.data.tlyric || null
+                    };
+                } else {
+                    console.log('歌词数据为空或无效');
+                    return null;
+                }
+            } else if (data.lyric && data.lyric.trim()) {
+                // 直接返回歌词数据的情况
+                console.log('找到直接歌词数据');
                 return {
-                    original: data.data.lyric,
-                    translation: data.data.tlyric
+                    original: data.lyric,
+                    translation: data.tlyric || null
                 };
             } else {
-                throw new Error(data.message || '获取歌词失败');
+                console.log('未找到歌词数据，响应结构:', Object.keys(data));
+                return null;
             }
         } catch (error) {
             console.error('获取歌词失败:', error);

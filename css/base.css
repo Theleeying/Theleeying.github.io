@@ -190,3 +190,22 @@ img {
         opacity: 0;
     }
 }
+
+/* 歌词模态框滚动条 */
+.lyrics-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.lyrics-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.lyrics-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.lyrics-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
