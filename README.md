@@ -50,7 +50,7 @@ EchoVerse/
 │       └── about.css     # 关于页样式
 ├── js/                   # JavaScript文件
 │   ├── common.js         # 通用函数
-│   ├── dom.js           # DOM操作封装
+│   ├── song-api.js      # 音乐API接口
 │   └── page/            # 页面脚本
 │       ├── player.js    # 播放器功能
 │       ├── explore.js   # 发现页功能
@@ -63,8 +63,10 @@ EchoVerse/
 - **HTML5** - 页面结构
 - **CSS3** - 样式设计
 - **JavaScript (ES6+)** - 交互功能
+- **Fetch API** - 网络请求
 - **Web Audio API** - 音频处理
 - **LocalStorage** - 数据存储
+- **GD音乐台API** - 音乐数据源
 
 ## 🎨 设计特色
 
@@ -103,9 +105,10 @@ EchoVerse/
 - 卡片点击交互
 
 ### 发现页面 (explore.html)
-- 音乐搜索功能
-- 搜索结果展示
+- 音乐搜索功能（集成GD音乐台API）
+- 实时搜索结果展示
 - 在线播放功能
+- 专辑封面自动获取
 
 ### 关于页面 (about.html)
 - 网站介绍
@@ -152,9 +155,10 @@ EchoVerse/
 
 ## ⚠️ 免责声明
 
-- 本网站使用的音乐资源来自第三方API
+- 本站资源来自网络，仅限本人学习参考，严禁下载、传播或商用
+- 如侵权请与我联系删除，继续使用将视为同意本声明
+- API来源：GD音乐台(music.gdstudio.xyz)
 - 仅供学习交流使用，请勿用于商业用途
-- 如有侵权，请联系删除
 
 ---
 

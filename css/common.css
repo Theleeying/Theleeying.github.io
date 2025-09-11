@@ -83,6 +83,21 @@ footer p {
     font-size: 0.9rem;
     opacity: 0.8;
     letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+footer .disclaimer {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    line-height: 1.4;
+    max-width: 800px;
+    margin: 0 auto 0.5rem;
+}
+
+footer .api-credit {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    color: #667eea;
 }
 
 /* 全局音乐播放器样式 */

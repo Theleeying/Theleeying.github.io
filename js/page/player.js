@@ -65,17 +65,18 @@ class MusicPlayer {
     }
     
     // 播放音乐
-    play() {
+    async play() {
         if (!this.currentSong) return;
         
-        this.audio.play().then(() => {
+        try {
+            await this.audio.play();
             this.isPlaying = true;
             this.playBtn.textContent = '⏸️';
             this.updatePlayHistory();
-        }).catch(error => {
+        } catch (error) {
             console.error('播放失败:', error);
             this.handleError(error);
-        });
+        }
     }
     
     // 暂停音乐
@@ -86,25 +87,45 @@ class MusicPlayer {
     }
     
     // 播放指定歌曲
-    playSong(song) {
-        if (!song || !song.url) {
+    async playSong(song) {
+        if (!song) {
             console.error('无效的歌曲信息');
             return;
         }
         
-        this.currentSong = song;
-        this.audio.src = song.url;
-        this.updateSongInfo();
-        
-        // 添加到播放列表
-        if (!this.playlist.find(s => s.id === song.id)) {
-            this.playlist.push(song);
-            this.currentIndex = this.playlist.length - 1;
-        } else {
-            this.currentIndex = this.playlist.findIndex(s => s.id === song.id);
+        try {
+            // 如果歌曲没有URL，尝试获取
+            if (!song.url) {
+                console.log('歌曲没有URL，尝试获取播放链接...');
+                if (window.songAPI) {
+                    const completeSong = await window.songAPI.getCompleteSongInfo(song);
+                    if (completeSong.url) {
+                        song = completeSong;
+                    } else {
+                        throw new Error('无法获取播放链接');
+                    }
+                } else {
+                    throw new Error('API服务不可用');
+                }
+            }
+            
+            this.currentSong = song;
+            this.audio.src = song.url;
+            this.updateSongInfo();
+            
+            // 添加到播放列表
+            if (!this.playlist.find(s => s.id === song.id)) {
+                this.playlist.push(song);
+                this.currentIndex = this.playlist.length - 1;
+            } else {
+                this.currentIndex = this.playlist.findIndex(s => s.id === song.id);
+            }
+            
+            await this.play();
+        } catch (error) {
+            console.error('播放歌曲失败:', error);
+            this.handleError(error);
         }
-        
-        this.play();
     }
     
     // 上一首

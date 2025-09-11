@@ -47,8 +47,8 @@ class ExplorePage {
         this.showLoading();
         
         try {
-            // 模拟API调用 - 实际项目中这里会调用真实的音乐API
-            const results = await this.searchSongs(query);
+            // 调用真实的音乐API
+            const results = await window.songAPI.searchSongs(query, 20, 1);
             this.currentResults = results;
             this.renderSongList(results);
         } catch (error) {
@@ -57,23 +57,7 @@ class ExplorePage {
         }
     }
     
-    // 模拟搜索API
-    async searchSongs(query) {
-        // 模拟网络延迟
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // 模拟搜索结果
-        const allSongs = this.getMockSongs();
-        const filtered = allSongs.filter(song => 
-            song.title.toLowerCase().includes(query.toLowerCase()) ||
-            song.artist.toLowerCase().includes(query.toLowerCase()) ||
-            song.album.toLowerCase().includes(query.toLowerCase())
-        );
-        
-        return filtered;
-    }
-    
-    // 获取模拟歌曲数据
+    // 获取模拟歌曲数据（作为默认显示）
     getMockSongs() {
         return [
             {
@@ -82,8 +66,8 @@ class ExplorePage {
                 artist: '周杰伦',
                 album: '十一月的萧邦',
                 duration: 240,
-                url: 'assets/media/audio/sample1.mp3',
-                cover: 'assets/images/album-covers/sample1.jpg'
+                url: null,
+                cover: 'assets/images/album-covers/default.jpg'
             },
             {
                 id: '2',
@@ -91,8 +75,8 @@ class ExplorePage {
                 artist: '周杰伦',
                 album: '我很忙',
                 duration: 220,
-                url: 'assets/media/audio/sample2.mp3',
-                cover: 'assets/images/album-covers/sample2.jpg'
+                url: null,
+                cover: 'assets/images/album-covers/default.jpg'
             },
             {
                 id: '3',
@@ -100,38 +84,12 @@ class ExplorePage {
                 artist: '周杰伦',
                 album: '魔杰座',
                 duration: 200,
-                url: 'assets/media/audio/sample3.mp3',
-                cover: 'assets/images/album-covers/sample3.jpg'
-            },
-            {
-                id: '4',
-                title: '告白气球',
-                artist: '周杰伦',
-                album: '周杰伦的床边故事',
-                duration: 210,
-                url: 'assets/media/audio/sample4.mp3',
-                cover: 'assets/images/album-covers/sample4.jpg'
-            },
-            {
-                id: '5',
-                title: '晴天',
-                artist: '周杰伦',
-                album: '叶惠美',
-                duration: 270,
-                url: 'assets/media/audio/sample5.mp3',
-                cover: 'assets/images/album-covers/sample5.jpg'
-            },
-            {
-                id: '6',
-                title: '七里香',
-                artist: '周杰伦',
-                album: '七里香',
-                duration: 250,
-                url: 'assets/media/audio/sample6.mp3',
-                cover: 'assets/images/album-covers/sample6.jpg'
+                url: null,
+                cover: 'assets/images/album-covers/default.jpg'
             }
         ];
     }
+    
     
     // 加载默认歌曲
     loadDefaultSongs() {
@@ -176,11 +134,29 @@ class ExplorePage {
     }
     
     // 播放歌曲
-    playSong(song) {
-        if (window.musicPlayer) {
-            window.musicPlayer.playSong(song);
-        } else {
+    async playSong(song) {
+        if (!window.musicPlayer) {
             console.error('播放器未初始化');
+            return;
+        }
+
+        try {
+            // 如果歌曲没有URL，先获取播放链接
+            if (!song.url) {
+                this.showLoading();
+                const completeSong = await window.songAPI.getCompleteSongInfo(song);
+                
+                if (completeSong.url) {
+                    window.musicPlayer.playSong(completeSong);
+                } else {
+                    this.showError('无法获取播放链接');
+                }
+            } else {
+                window.musicPlayer.playSong(song);
+            }
+        } catch (error) {
+            console.error('播放歌曲失败:', error);
+            this.showError('播放失败，请稍后重试');
         }
     }
     
