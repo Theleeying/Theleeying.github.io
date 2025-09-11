@@ -26,6 +26,10 @@ class MusicPlayer {
         this.currentLyricIndex = -1;
         this.lyricsModal = null;
         
+        // 拖动相关
+        this.isDragging = false;
+        this.dragType = null; // 'progress' 或 'volume'
+        
         this.bindDOMElements();
         this.init();
     }
@@ -49,9 +53,21 @@ class MusicPlayer {
         // 调试信息
         console.log('绑定DOM元素:', {
             playBtn: !!this.playBtn,
+            progressBar: !!this.progressBar,
+            progressFill: !!this.progressFill,
+            currentTimeEl: !!this.currentTimeEl,
+            totalTimeEl: !!this.totalTimeEl,
             albumCover: !!this.albumCover,
             songTitle: !!this.songTitle
         });
+        
+        // 检查关键元素是否存在
+        if (!this.progressFill) {
+            console.error('进度条填充元素未找到！');
+        }
+        if (!this.progressBar) {
+            console.error('进度条容器元素未找到！');
+        }
     }
     
     init() {
@@ -190,23 +206,39 @@ class MusicPlayer {
             this.nextBtn.addEventListener('click', () => this.nextSong());
         }
         
-        // 进度条点击
+        // 进度条点击和拖动
         if (this.progressBar) {
             this.progressBar.addEventListener('click', (e) => this.seekTo(e));
+            this.progressBar.addEventListener('mousedown', (e) => this.startProgressDrag(e));
         }
         
-        // 音量控制
+        // 音量控制点击和拖动
         if (this.volumeBar) {
             this.volumeBar.addEventListener('click', (e) => this.setVolume(e));
+            this.volumeBar.addEventListener('mousedown', (e) => this.startVolumeDrag(e));
         }
+        
+        // 全局鼠标事件
+        document.addEventListener('mousemove', (e) => this.handleDrag(e));
+        document.addEventListener('mouseup', (e) => this.endDrag(e));
         if (this.volumeBtn) {
             this.volumeBtn.addEventListener('click', () => this.toggleMute());
         }
         
         // 音频事件监听（只绑定一次）
         if (this.audio && !this.audio.hasAttribute('data-events-bound')) {
-            this.audio.addEventListener('timeupdate', () => this.updateProgress());
-            this.audio.addEventListener('loadedmetadata', () => this.updateDuration());
+            console.log('绑定音频事件监听器');
+            
+            this.audio.addEventListener('timeupdate', () => {
+                console.log('timeupdate事件触发');
+                this.updateProgress();
+            });
+            
+            this.audio.addEventListener('loadedmetadata', () => {
+                console.log('loadedmetadata事件触发');
+                this.updateDuration();
+            });
+            
             this.audio.addEventListener('ended', () => this.nextSong());
             this.audio.addEventListener('error', (e) => this.handleError(e));
             this.audio.addEventListener('loadstart', () => this.onLoadStart());
@@ -214,7 +246,13 @@ class MusicPlayer {
             this.audio.addEventListener('waiting', () => this.onWaiting());
             this.audio.addEventListener('playing', () => this.onPlaying());
             this.audio.addEventListener('pause', () => this.onPause());
+            
             this.audio.setAttribute('data-events-bound', 'true');
+            console.log('音频事件监听器绑定完成');
+        } else if (this.audio) {
+            console.log('音频事件监听器已绑定');
+        } else {
+            console.error('音频元素不存在，无法绑定事件监听器');
         }
     }
     
@@ -265,6 +303,11 @@ class MusicPlayer {
             this.playBtn.textContent = '⏸️';
             this.updatePlayHistory();
             this.savePlayerState(); // 保存状态
+            
+            // 添加播放动画效果
+            if (this.progressFill) {
+                this.progressFill.classList.add('playing');
+            }
         } catch (error) {
             console.error('播放失败:', error);
             this.handleError(error);
@@ -277,6 +320,11 @@ class MusicPlayer {
         this.isPlaying = false;
         this.playBtn.textContent = '▶️';
         this.savePlayerState(); // 保存状态
+        
+        // 移除播放动画效果
+        if (this.progressFill) {
+            this.progressFill.classList.remove('playing');
+        }
     }
     
     // 播放指定歌曲
@@ -398,6 +446,89 @@ class MusicPlayer {
         this.updateVolumeDisplay();
     }
     
+    // 开始进度条拖动
+    startProgressDrag(event) {
+        event.preventDefault();
+        this.isDragging = true;
+        this.dragType = 'progress';
+        this.progressBar.style.cursor = 'grabbing';
+        
+        // 立即更新到鼠标位置
+        this.updateProgressFromMouse(event);
+    }
+    
+    // 开始音量条拖动
+    startVolumeDrag(event) {
+        event.preventDefault();
+        this.isDragging = true;
+        this.dragType = 'volume';
+        this.volumeBar.style.cursor = 'grabbing';
+        
+        // 立即更新到鼠标位置
+        this.updateVolumeFromMouse(event);
+    }
+    
+    // 处理拖动
+    handleDrag(event) {
+        if (!this.isDragging) return;
+        
+        event.preventDefault();
+        
+        if (this.dragType === 'progress') {
+            this.updateProgressFromMouse(event);
+        } else if (this.dragType === 'volume') {
+            this.updateVolumeFromMouse(event);
+        }
+    }
+    
+    // 结束拖动
+    endDrag(event) {
+        if (!this.isDragging) return;
+        
+        this.isDragging = false;
+        this.dragType = null;
+        
+        // 恢复鼠标样式
+        if (this.progressBar) {
+            this.progressBar.style.cursor = 'pointer';
+        }
+        if (this.volumeBar) {
+            this.volumeBar.style.cursor = 'pointer';
+        }
+    }
+    
+    // 根据鼠标位置更新进度
+    updateProgressFromMouse(event) {
+        if (!this.audio.duration) return;
+        
+        const rect = this.progressBar.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const percentage = Math.max(0, Math.min(1, clickX / rect.width));
+        const newTime = percentage * this.audio.duration;
+        
+        this.audio.currentTime = newTime;
+        
+        // 更新进度条显示
+        this.progressFill.style.width = `${percentage * 100}%`;
+        if (this.currentTimeEl) {
+            this.currentTimeEl.textContent = formatTime(newTime);
+        }
+    }
+    
+    // 根据鼠标位置更新音量
+    updateVolumeFromMouse(event) {
+        const rect = this.volumeBar.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const percentage = Math.max(0, Math.min(1, clickX / rect.width));
+        
+        this.volume = percentage;
+        this.audio.volume = this.volume;
+        
+        // 更新音量条显示
+        this.volumeFill.style.width = `${percentage * 100}%`;
+        this.updateVolumeDisplay();
+    }
+    
     // 静音切换
     toggleMute() {
         if (this.isMuted) {
@@ -417,22 +548,66 @@ class MusicPlayer {
     
     // 更新进度条
     updateProgress() {
-        if (!this.audio.duration) return;
+        if (!this.audio || !this.audio.duration) {
+            console.log('updateProgress: 音频或时长不可用', {
+                audio: !!this.audio,
+                duration: this.audio?.duration
+            });
+            return;
+        }
+        
+        if (!this.progressFill) {
+            console.error('updateProgress: 进度条填充元素不存在');
+            return;
+        }
+        
+        // 如果正在拖动进度条，不自动更新进度条显示
+        if (this.isDragging && this.dragType === 'progress') {
+            return;
+        }
         
         const percentage = (this.audio.currentTime / this.audio.duration) * 100;
+        
+        // 更新进度条
         this.progressFill.style.width = `${percentage}%`;
-        this.currentTimeEl.textContent = formatTime(this.audio.currentTime);
+        
+        // 更新时间显示
+        if (this.currentTimeEl) {
+            this.currentTimeEl.textContent = formatTime(this.audio.currentTime);
+        }
         
         // 每5秒保存一次状态（避免过于频繁）
         if (!this.lastSaveTime || Date.now() - this.lastSaveTime > 5000) {
             this.savePlayerState();
             this.lastSaveTime = Date.now();
         }
+        
+        // 调试信息（每10秒输出一次）
+        if (!this.lastDebugTime || Date.now() - this.lastDebugTime > 10000) {
+            console.log('进度更新:', {
+                currentTime: this.audio.currentTime,
+                duration: this.audio.duration,
+                percentage: percentage.toFixed(2) + '%',
+                progressFillWidth: this.progressFill.style.width
+            });
+            this.lastDebugTime = Date.now();
+        }
     }
     
     // 更新总时长
     updateDuration() {
+        if (!this.audio || !this.audio.duration) {
+            console.log('updateDuration: 音频或时长不可用');
+            return;
+        }
+        
+        if (!this.totalTimeEl) {
+            console.error('updateDuration: 总时长元素不存在');
+            return;
+        }
+        
         this.totalTimeEl.textContent = formatTime(this.audio.duration);
+        console.log('更新总时长:', formatTime(this.audio.duration));
     }
     
     // 更新音量显示
