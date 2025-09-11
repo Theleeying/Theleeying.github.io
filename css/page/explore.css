@@ -69,7 +69,7 @@
 
 /* 结果区域 */
 .results-section {
-    padding: 0 2rem;
+    padding: 0 2rem 80px 2rem; /* 为底部播放器留出空间 */
 }
 
 .results-section h3 {
