@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoVerse - 你的个人音乐宇宙</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/page/index.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>EchoVerse</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">首页</a></li>
+                <li><a href="explore.html">发现</a></li>
+                <li><a href="about.html">关于</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h2>欢迎来到 EchoVerse</h2>
+            <p>发现音乐，分享感动</p>
+        </section>
+
+        <section class="featured-playlists">
+            <h3>推荐歌单</h3>
+            <div class="playlist-grid">
+                <!-- 动态生成内容 -->
+            </div>
+        </section>
+
+        <section class="new-albums">
+            <h3>新专速递</h3>
+            <div class="album-grid">
+                <!-- 动态生成内容 -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 EchoVerse. 你的个人音乐宇宙</p>
+    </footer>
+
+    <!-- 全局音乐播放器 -->
+    <div class="player-bar">
+        <div class="player-info">
+            <img src="assets/images/album-covers/default.jpg" alt="专辑封面" class="album-cover">
+            <div class="song-info">
+                <h4 class="song-title">选择一首歌曲开始播放</h4>
+                <p class="artist-name">艺术家</p>
+            </div>
+        </div>
+        <div class="player-controls">
+            <button class="control-btn prev-btn">⏮️</button>
+            <button class="control-btn play-btn">▶️</button>
+            <button class="control-btn next-btn">⏭️</button>
+        </div>
+        <div class="player-progress">
+            <span class="current-time">0:00</span>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <span class="total-time">0:00</span>
+        </div>
+        <div class="player-volume">
+            <button class="volume-btn">🔊</button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio-player" preload="metadata"></audio>
+
+    <script src="js/common.js"></script>
+    <script src="js/page/player.js"></script>
+</body>
+</html>
