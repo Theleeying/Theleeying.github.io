@@ -13,6 +13,18 @@ class ExplorePage {
     init() {
         this.setupEventListeners();
         this.loadDefaultSongs();
+        this.testPlayerConnection();
+    }
+    
+    // 测试播放器连接
+    testPlayerConnection() {
+        setTimeout(() => {
+            if (window.musicPlayer) {
+                console.log('播放器连接正常');
+            } else {
+                console.error('播放器连接失败');
+            }
+        }, 500);
     }
     
     setupEventListeners() {
@@ -122,46 +134,88 @@ class ExplorePage {
     createSongItem(song) {
         const li = $.create('li', 'song-item');
         
+        // 处理专辑封面
+        let coverSrc = 'assets/images/album-covers/default.jpg';
+        if (song.cover) {
+            if (typeof song.cover === 'string' && song.cover.startsWith('http')) {
+                coverSrc = song.cover;
+            } else if (typeof song.cover === 'string') {
+                // 如果是pic_id，先显示默认封面，稍后异步加载
+                coverSrc = 'assets/images/album-covers/default.jpg';
+            }
+        }
+        
         li.innerHTML = `
-            <img src="${song.cover}" alt="${song.title}" class="song-cover" onerror="this.src='assets/images/album-covers/default.jpg'">
+            <img src="${coverSrc}" alt="${song.title}" class="song-cover" data-pic-id="${song.cover || ''}">
             <div class="song-details">
                 <h4 class="song-title">${song.title}</h4>
                 <p class="song-artist">${song.artist} - ${song.album}</p>
             </div>
-            <span class="song-duration">${formatTime(song.duration)}</span>
+            <span class="song-duration">${formatTime(song.duration || 0)}</span>
             <div class="play-icon">▶️</div>
         `;
         
         // 添加点击事件
         li.addEventListener('click', () => this.playSong(song));
         
+        // 异步加载专辑封面
+        this.loadSongCover(li, song.cover);
+        
         return li;
+    }
+    
+    // 加载歌曲封面
+    async loadSongCover(li, picId) {
+        if (!picId || typeof picId !== 'string' || picId.startsWith('http')) {
+            return;
+        }
+        
+        try {
+            if (window.songAPI && window.songAPI.isAvailable) {
+                const coverUrl = await window.songAPI.getAlbumCover(picId);
+                if (coverUrl) {
+                    const img = li.querySelector('.song-cover');
+                    if (img) {
+                        // 预加载图片，避免闪烁
+                        const newImg = new Image();
+                        newImg.onload = () => {
+                            img.src = coverUrl;
+                        };
+                        newImg.onerror = () => {
+                            // 保持默认封面
+                        };
+                        newImg.src = coverUrl;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('加载歌曲封面失败:', error);
+        }
     }
     
     // 播放歌曲
     async playSong(song) {
+        console.log('尝试播放歌曲:', song);
+        
         if (!window.musicPlayer) {
             console.error('播放器未初始化');
+            this.showError('播放器未初始化');
             return;
         }
 
         try {
-            // 如果歌曲没有URL，先获取播放链接
-            if (!song.url) {
-                this.showLoading();
-                const completeSong = await window.songAPI.getCompleteSongInfo(song);
-                
-                if (completeSong.url) {
-                    window.musicPlayer.playSong(completeSong);
-                } else {
-                    this.showError('无法获取播放链接');
-                }
-            } else {
-                window.musicPlayer.playSong(song);
-            }
+            // 显示播放提示
+            this.showToast(`正在加载: ${song.title}`);
+            
+            // 直接调用播放器的playSong方法，让它处理URL获取
+            await window.musicPlayer.playSong(song);
+            
+            // 播放成功提示
+            this.showToast(`开始播放: ${song.title}`, 'success');
+            
         } catch (error) {
             console.error('播放歌曲失败:', error);
-            this.showError('播放失败，请稍后重试');
+            this.showError(`播放失败: ${error.message}`);
         }
     }
     
@@ -189,10 +243,52 @@ class ExplorePage {
             </li>
         `;
     }
+    
+    // 显示提示信息
+    showToast(message, type = 'info') {
+        const toast = $.create('div', 'toast');
+        toast.textContent = message;
+        
+        const colors = {
+            info: 'linear-gradient(135deg, #667eea, #764ba2)',
+            error: 'linear-gradient(135deg, #ff6b6b, #ff5252)',
+            success: 'linear-gradient(135deg, #4caf50, #45a049)'
+        };
+        
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${colors[type] || colors.info};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+            max-width: 300px;
+            word-wrap: break-word;
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // 3秒后自动移除
+        setTimeout(() => {
+            toast.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    }
 }
 
 // 页面加载完成后初始化发现页
 document.addEventListener('DOMContentLoaded', () => {
-    new ExplorePage();
-    console.log('发现页已初始化');
+    // 延迟初始化，确保播放器先初始化
+    setTimeout(() => {
+        new ExplorePage();
+        console.log('发现页已初始化');
+    }, 200);
 });

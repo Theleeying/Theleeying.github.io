@@ -93,22 +93,50 @@ class SongAPI {
                 br: quality
             });
 
-            const response = await fetch(`${this.baseURL}?${params}`);
+            const url = `${this.baseURL}?${params}`;
+            console.log('获取播放链接请求:', url);
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+            
+            console.log('播放链接响应状态:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
+            console.log('播放链接响应数据:', data);
             
-            if (data.code === 200 && data.data) {
+            // 处理不同的响应格式
+            if (data.url) {
+                // 直接返回URL的情况（当前API格式）
+                return {
+                    url: data.url,
+                    quality: data.br || quality,
+                    size: data.size
+                };
+            } else if (data.code === 200 && data.data) {
+                // 嵌套data的情况
                 return {
                     url: data.data.url,
                     quality: data.data.br,
                     size: data.data.size
                 };
+            } else if (data.code === 200 && data.url) {
+                // 直接返回URL的情况
+                return {
+                    url: data.url,
+                    quality: data.br || quality,
+                    size: data.size
+                };
             } else {
-                throw new Error(data.message || '获取播放链接失败');
+                throw new Error(data.message || data.msg || '获取播放链接失败');
             }
         } catch (error) {
             console.error('获取歌曲URL失败:', error);
@@ -126,18 +154,38 @@ class SongAPI {
                 size: size
             });
 
-            const response = await fetch(`${this.baseURL}?${params}`);
+            const url = `${this.baseURL}?${params}`;
+            console.log('获取专辑封面请求:', url);
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+            
+            console.log('专辑封面响应状态:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
+            console.log('专辑封面响应数据:', data);
             
-            if (data.code === 200 && data.data) {
+            // 处理不同的响应格式
+            if (data.url) {
+                // 直接返回URL的情况（当前API格式）
+                return data.url;
+            } else if (data.code === 200 && data.data) {
+                // 嵌套data的情况
                 return data.data.url;
+            } else if (data.code === 200 && data.url) {
+                // 直接返回URL的情况
+                return data.url;
             } else {
-                throw new Error(data.message || '获取专辑封面失败');
+                throw new Error(data.message || data.msg || '获取专辑封面失败');
             }
         } catch (error) {
             console.error('获取专辑封面失败:', error);
@@ -179,18 +227,38 @@ class SongAPI {
     // 获取完整的歌曲信息（包含URL和封面）
     async getCompleteSongInfo(song) {
         try {
-            const [urlData, coverUrl] = await Promise.all([
-                this.getSongURL(song.id),
-                this.getAlbumCover(song.cover)
-            ]);
+            console.log('获取完整歌曲信息:', song);
+            
+            // 分别获取URL和封面，避免一个失败影响另一个
+            let urlData = null;
+            let coverUrl = null;
+            
+            try {
+                urlData = await this.getSongURL(song.id);
+                console.log('获取到播放链接:', urlData);
+            } catch (error) {
+                console.error('获取播放链接失败:', error);
+            }
+            
+            try {
+                if (song.cover && typeof song.cover === 'string' && !song.cover.startsWith('http')) {
+                    coverUrl = await this.getAlbumCover(song.cover);
+                    console.log('获取到专辑封面:', coverUrl);
+                }
+            } catch (error) {
+                console.error('获取专辑封面失败:', error);
+            }
 
-            return {
+            const result = {
                 ...song,
-                url: urlData.url,
-                quality: urlData.quality,
-                size: urlData.size,
+                url: urlData ? urlData.url : null,
+                quality: urlData ? urlData.quality : null,
+                size: urlData ? urlData.size : null,
                 cover: coverUrl || 'assets/images/album-covers/default.jpg'
             };
+            
+            console.log('完整歌曲信息结果:', result);
+            return result;
         } catch (error) {
             console.error('获取完整歌曲信息失败:', error);
             return {
