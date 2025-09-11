@@ -51,11 +51,14 @@ section h3 {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
     cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
 }
 
 .playlist-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+    border-color: rgba(102, 126, 234, 0.3);
 }
 
 .playlist-cover {
@@ -96,11 +99,14 @@ section h3 {
     transition: all 0.3s ease;
     cursor: pointer;
     text-align: center;
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
 }
 
 .album-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+    border-color: rgba(102, 126, 234, 0.3);
 }
 
 .album-cover {
