@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>播放历史 - EchoVerse</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/page/history.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>EchoVerse</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="explore.html">发现</a></li>
+                <li><a href="about.html">关于</a></li>
+                <li class="auth-section">
+                    <a href="login.html" class="login-link" id="loginLink">登录</a>
+                    <div class="user-menu" id="userMenu" style="display: none;">
+                        <span class="user-info" id="userInfo"></span>
+                        <button class="logout-btn" id="logoutBtn">退出登录</button>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="history-hero">
+            <div class="container">
+                <h2>我的播放历史</h2>
+                <p>回顾你听过的每一首歌</p>
+            </div>
+        </section>
+
+        <section class="history-content">
+            <div class="container">
+                <!-- 未登录状态 -->
+                <div class="login-required" id="loginRequired" style="display: none;">
+                    <div class="login-prompt">
+                        <div class="prompt-icon">🎵</div>
+                        <h3>需要登录才能查看播放历史</h3>
+                        <p>登录后可以查看你的音乐播放记录，发现更多喜欢的歌曲</p>
+                        <a href="login.html" class="login-btn">立即登录</a>
+                    </div>
+                </div>
+
+                <!-- 已登录状态 -->
+                <div class="history-main" id="historyMain" style="display: none;">
+                    <!-- 统计信息 -->
+                    <div class="history-stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalSongs">0</div>
+                            <div class="stat-label">总播放歌曲</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalTime">0</div>
+                            <div class="stat-label">总播放时长</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="favoriteArtists">0</div>
+                            <div class="stat-label">喜爱歌手</div>
+                        </div>
+                    </div>
+
+                    <!-- 筛选和排序 -->
+                    <div class="history-controls">
+                        <div class="filter-section">
+                            <label for="timeFilter">时间筛选：</label>
+                            <select id="timeFilter">
+                                <option value="all">全部时间</option>
+                                <option value="today">今天</option>
+                                <option value="week">本周</option>
+                                <option value="month">本月</option>
+                            </select>
+                        </div>
+                        <div class="sort-section">
+                            <label for="sortBy">排序方式：</label>
+                            <select id="sortBy">
+                                <option value="recent">最近播放</option>
+                                <option value="frequent">播放次数</option>
+                                <option value="duration">播放时长</option>
+                                <option value="artist">歌手</option>
+                            </select>
+                        </div>
+                        <div class="search-section">
+                            <input type="text" id="searchHistory" placeholder="搜索历史记录...">
+                        </div>
+                    </div>
+
+                    <!-- 历史记录列表 -->
+                    <div class="history-list" id="historyList">
+                        <!-- 动态生成内容 -->
+                    </div>
+
+                    <!-- 空状态 -->
+                    <div class="empty-history" id="emptyHistory" style="display: none;">
+                        <div class="empty-icon">🎶</div>
+                        <h3>还没有播放历史</h3>
+                        <p>开始播放音乐，你的播放记录将显示在这里</p>
+                        <a href="explore.html" class="explore-btn">去发现音乐</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 全局音乐播放器 -->
+    <div class="player-bar">
+        <div class="player-info">
+            <img src="assets/images/album-covers/default.jpg" alt="专辑封面" class="album-cover">
+            <div class="song-info">
+                <h4 class="song-title">选择一首歌曲开始播放</h4>
+                <p class="artist-name">艺术家</p>
+            </div>
+        </div>
+        <div class="player-controls">
+            <button class="control-btn prev-btn">⏮️</button>
+            <button class="control-btn play-btn">▶️</button>
+            <button class="control-btn next-btn">⏭️</button>
+        </div>
+        <div class="player-progress">
+            <span class="current-time">0:00</span>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <span class="total-time">0:00</span>
+        </div>
+        <div class="player-volume">
+            <button class="volume-btn">🔊</button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>EchoVerse</h3>
+                    <p>发现音乐，分享感动</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="explore.html">发现</a></li>
+                        <li><a href="about.html">关于</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>功能</h4>
+                    <ul>
+                        <li><a href="history.html">播放历史</a></li>
+                        <li><a href="login.html">登录</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 EchoVerse. 所有权利保留。</p>
+                <div class="disclaimer">
+                    <p><strong>免责声明：</strong>本网站仅供学习和演示使用，所有音乐内容均来自第三方API，版权归原作者所有。</p>
+                    <p><strong>API来源：</strong>GD音乐台 (music-api.gdstudio.xyz)</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <audio id="audio-player" preload="metadata"></audio>
+
+    <script src="js/common.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/song-api.js"></script>
+    <script src="js/auth-manager.js"></script>
+    <script src="js/page/player.js"></script>
+    <script src="js/page/history.js"></script>
+</body>
+</html>

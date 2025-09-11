@@ -335,6 +335,9 @@ class MusicPlayer {
             // 获取歌词
             this.loadLyrics(song);
             
+            // 添加到播放历史记录
+            this.addToPlayHistory(song);
+            
             console.log('开始播放音频...');
             await this.play();
         } catch (error) {
@@ -1155,6 +1158,42 @@ class MusicPlayer {
             this.setupAlbumCoverClick();
         } else {
             this.showToast('未找到歌词');
+        }
+    }
+
+    // 添加到播放历史记录
+    addToPlayHistory(song) {
+        console.log('addToPlayHistory 被调用，歌曲:', song);
+        try {
+            // 检查是否有登录用户
+            const userData = localStorage.getItem('userData');
+            console.log('用户数据:', userData ? '存在' : '不存在');
+            
+            if (userData) {
+                const user = JSON.parse(userData);
+                console.log('解析用户数据:', user);
+                
+                // 使用HistoryManager的静态方法添加记录
+                if (window.HistoryManager) {
+                    console.log('使用 window.HistoryManager.addPlayRecord');
+                    window.HistoryManager.addPlayRecord(song, user);
+                } else {
+                    console.log('window.HistoryManager 不存在，尝试其他方式');
+                    // 如果HistoryManager还没加载，直接调用静态方法
+                    const HistoryManager = window.HistoryManager || 
+                        (window.historyManager && window.historyManager.constructor);
+                    if (HistoryManager && HistoryManager.addPlayRecord) {
+                        console.log('使用备用方式调用 addPlayRecord');
+                        HistoryManager.addPlayRecord(song, user);
+                    } else {
+                        console.error('无法找到 HistoryManager.addPlayRecord 方法');
+                    }
+                }
+            } else {
+                console.log('用户未登录，跳过历史记录');
+            }
+        } catch (error) {
+            console.error('添加播放历史记录失败:', error);
         }
     }
 }

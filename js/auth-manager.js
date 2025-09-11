@@ -37,18 +37,21 @@ class AuthManager {
         const loginLink = document.getElementById('loginLink');
         const userMenu = document.getElementById('userMenu');
         const userInfo = document.getElementById('userInfo');
+        const historyLink = document.getElementById('historyLink');
 
         if (this.currentUser) {
-            // 用户已登录，显示用户菜单
+            // 用户已登录，显示用户菜单和历史记录链接
             if (loginLink) loginLink.style.display = 'none';
             if (userMenu) userMenu.style.display = 'flex';
+            if (historyLink) historyLink.style.display = 'inline-block';
             if (userInfo) {
                 userInfo.textContent = `欢迎，${this.currentUser.username}`;
             }
         } else {
-            // 用户未登录，显示登录链接
+            // 用户未登录，显示登录链接，隐藏历史记录链接
             if (loginLink) loginLink.style.display = 'inline-block';
             if (userMenu) userMenu.style.display = 'none';
+            if (historyLink) historyLink.style.display = 'none';
         }
     }
 
