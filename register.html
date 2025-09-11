@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - EchoVerse</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/page/login.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>EchoVerse</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="explore.html">发现</a></li>
+                <li><a href="about.html">关于</a></li>
+                <li><a href="login.html">登录</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="login-main">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h2>加入我们</h2>
+                    <p>创建你的音乐宇宙账户</p>
+                </div>
+
+                <form class="login-form" id="registerForm">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" id="username" name="username" required>
+                        <span class="form-error" id="usernameError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">邮箱地址</label>
+                        <input type="email" id="email" name="email" required>
+                        <span class="form-error" id="emailError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" id="password" name="password" required>
+                        <span class="form-error" id="passwordError"></span>
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="strength-bar">
+                                <div class="strength-fill"></div>
+                            </div>
+                            <span class="strength-text">密码强度</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">确认密码</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        <span class="form-error" id="confirmPasswordError"></span>
+                    </div>
+
+
+                    <button type="submit" class="login-btn" id="registerBtn">
+                        <span class="btn-text">创建账户</span>
+                        <span class="btn-loading" style="display: none;">注册中...</span>
+                    </button>
+                </form>
+
+
+                <div class="login-footer">
+                    <p>已有账户？ <a href="login.html" class="register-link">立即登录</a></p>
+                </div>
+            </div>
+
+            <div class="login-visual">
+                <div class="music-animation">
+                    <div class="music-note">🎵</div>
+                    <div class="music-note">🎶</div>
+                    <div class="music-note">🎼</div>
+                    <div class="music-note">🎹</div>
+                </div>
+                <h3>开始你的音乐之旅</h3>
+                <p>加入EchoVerse，发现更多精彩音乐，记录你的音乐时光</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 EchoVerse. 你的个人音乐宇宙</p>
+        <p class="disclaimer">本站资源来自网络，仅限本人学习参考，严禁下载、传播或商用，如侵权请与我联系删除。继续使用将视为同意本声明</p>
+        <p class="api-credit">API来源：GD音乐台(music.gdstudio.xyz)</p>
+    </footer>
+
+    <!-- 全局音乐播放器 -->
+    <div class="player-bar">
+        <div class="player-info">
+            <img src="assets/images/album-covers/default.jpg" alt="专辑封面" class="album-cover">
+            <div class="song-info">
+                <h4 class="song-title">选择一首歌曲开始播放</h4>
+                <p class="artist-name">艺术家</p>
+            </div>
+        </div>
+        <div class="player-controls">
+            <button class="control-btn prev-btn">⏮️</button>
+            <button class="control-btn play-btn">▶️</button>
+            <button class="control-btn next-btn">⏭️</button>
+        </div>
+        <div class="player-progress">
+            <span class="current-time">0:00</span>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <span class="total-time">0:00</span>
+        </div>
+        <div class="player-volume">
+            <button class="volume-btn">🔊</button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio-player" preload="metadata"></audio>
+
+    <script src="js/common.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/auth-manager.js"></script>
+    <script src="js/page/login.js"></script>
+</body>
+</html>

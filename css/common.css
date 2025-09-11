@@ -73,6 +73,65 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+.nav-menu a.login-link {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    font-weight: 500;
+}
+
+.nav-menu a.login-link:hover {
+    background: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.5);
+    transform: translateZ(0) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 用户认证区域 */
+.auth-section {
+    position: relative;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+}
+
+.logout-btn {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.9);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.logout-btn:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.3);
+    transform: translateZ(0) translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.logout-btn:active {
+    transform: translateZ(0) translateY(0);
+}
+
 /* 页脚样式 */
 footer {
     background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);

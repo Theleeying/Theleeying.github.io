@@ -18,6 +18,13 @@
                 <li><a href="index.html" class="active">首页</a></li>
                 <li><a href="explore.html">发现</a></li>
                 <li><a href="about.html">关于</a></li>
+                <li class="auth-section">
+                    <a href="login.html" class="login-link" id="loginLink">登录</a>
+                    <div class="user-menu" id="userMenu" style="display: none;">
+                        <span class="user-info" id="userInfo"></span>
+                        <button class="logout-btn" id="logoutBtn">退出登录</button>
+                    </div>
+                </li>
             </ul>
         </nav>
     </header>
@@ -95,6 +102,7 @@
     <script src="js/common.js"></script>
     <script src="js/navigation.js"></script>
     <script src="js/song-api.js"></script>
+    <script src="js/auth-manager.js"></script>
     <script src="js/page/player.js"></script>
     <script src="js/page/index.js"></script>
 </body>
